@@ -572,11 +572,15 @@ module Fastlane
 
         bucket = Aws::S3::Bucket.new(bucket_name, client: s3_client)
         details = {
-          acl: acl,
           key: file_name,
           body: file_data,
           content_type: MIME::Types.type_for(File.extname(file_name)).first.to_s
         }
+
+        unless acl.to_s.strip.empty?
+          details[:acl] = acl
+        end
+        
         details = details.merge(server_side_encryption: server_side_encryption) if server_side_encryption.length > 0
         obj = bucket.put_object(details)
 
